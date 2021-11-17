@@ -17,17 +17,36 @@ public class NetworkedClient : MonoBehaviour
     bool isConnected = false;
     int ourClientID;
 
+    bool isClientX = false;
+    bool isClientO = false;
+
+    GameObject gameSystemManager;
+
     // Start is called before the first frame update
     void Start()
     {
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>();
+
+        foreach (GameObject go in allObjects)
+        {
+            if(go.GetComponent<GameSystemManager>() != null)
+            {
+                gameSystemManager = go;
+            }
+        }
+
         Connect();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
-            SendMessageToHost("Hello from client");
+        //if(Input.GetKeyDown(KeyCode.S))
+        //    SendMessageToHost("Hello from client");
+
+        ////Challenge 1- Prefixed messages:
+        //if(Input.GetKeyDown(KeyCode.P))
+            
 
         UpdateNetworkConnection();
     }
@@ -42,19 +61,23 @@ public class NetworkedClient : MonoBehaviour
             byte[] recBuffer = new byte[1024];
             int bufferSize = 1024;
             int dataSize;
+            //Called to poll underlying systems for events
             NetworkEventType recNetworkEvent = NetworkTransport.Receive(out recHostID, out recConnectionID, out recChannelID, recBuffer, bufferSize, out dataSize, out error);
 
             switch (recNetworkEvent)
             {
+                //For Connecting
                 case NetworkEventType.ConnectEvent:
                     Debug.Log("connected.  " + recConnectionID);
                     ourClientID = recConnectionID;
                     break;
+                //For Data Event
                 case NetworkEventType.DataEvent:
                     string msg = Encoding.Unicode.GetString(recBuffer, 0, dataSize);
                     ProcessRecievedMsg(msg, recConnectionID);
                     //Debug.Log("got msg = " + msg);
                     break;
+                //For Disconnecting
                 case NetworkEventType.DisconnectEvent:
                     isConnected = false;
                     Debug.Log("disconnected.  " + recConnectionID);
@@ -78,8 +101,8 @@ public class NetworkedClient : MonoBehaviour
             HostTopology topology = new HostTopology(config, maxConnections);
             hostID = NetworkTransport.AddHost(topology, 0);
             Debug.Log("Socket open.  Host ID = " + hostID);
-
-            connectionID = NetworkTransport.Connect(hostID, "192.168.2.37", socketPort, 0, out error); // server is local on network
+            //Put my Local IP so that it connects with the server.
+            connectionID = NetworkTransport.Connect(hostID, "192.168.0.10", socketPort, 0, out error); // server is local on network
 
             if (error == 0)
             {
@@ -96,6 +119,7 @@ public class NetworkedClient : MonoBehaviour
         NetworkTransport.Disconnect(hostID, connectionID, out error);
     }
     
+    //Used to send messages to the server
     public void SendMessageToHost(string msg)
     {
         byte[] buffer = Encoding.Unicode.GetBytes(msg);
@@ -105,6 +129,54 @@ public class NetworkedClient : MonoBehaviour
     private void ProcessRecievedMsg(string msg, int id)
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
+
+        string[] csv = msg.Split(',');
+
+        int signifier = int.Parse(csv[0]);
+
+        if(signifier == ServerToClientSignifiers.AccountCreationComplete)
+        {
+            gameSystemManager.GetComponent<GameSystemManager>().ChangeState(GameStates.MainMenu);
+        }
+        else if(signifier == ServerToClientSignifiers.LoginComplete)
+        {
+            gameSystemManager.GetComponent<GameSystemManager>().ChangeState(GameStates.MainMenu);
+        }
+        else if (signifier == ServerToClientSignifiers.GameStart)
+        {
+            Debug.Log("Game Start");
+            gameSystemManager.GetComponent<GameSystemManager>().ChangeState(GameStates.TicTacToeGame);
+        }
+        else if (signifier == ServerToClientSignifiers.OpponentPlay)
+        {
+            Debug.Log("Opponent Play");
+            gameSystemManager.GetComponent<GameSystemManager>().canPlayGame = true;
+        }
+        else if(signifier == ServerToClientSignifiers.ClientIsObserver)
+        {
+            Debug.Log("Player is now observer");
+            gameSystemManager.GetComponent<GameSystemManager>().canPlayGame = false;
+        }
+        else if(signifier == ServerToClientSignifiers.PlayerX)
+        {
+            Debug.Log("Client is player X");
+            IsClientX();
+        }
+        else if (signifier == ServerToClientSignifiers.PlayerO)
+        {
+            Debug.Log("Client is player O");
+            IsClientO();
+        }
+    }
+
+    public bool IsClientX()
+    {
+        return isClientX = true;
+    }
+    public bool IsClientO()
+    {
+
+        return isClientO = true;
     }
 
     public bool IsConnected()
@@ -113,4 +185,36 @@ public class NetworkedClient : MonoBehaviour
     }
 
 
+}
+
+
+
+public static class ClientToServerSignifiers
+{
+    public const int CreateAccount = 1;
+    public const int Login = 2;
+    public const int JoinGameRoomQueue = 3;
+    public const int TicTacToeSomethingPlay = 4;
+    public const int ClientIsObserver = 5;
+    public const int ClientIsPlayer = 6;
+    public const int ClientWon = 7;
+    public const int ClientLost = 8;
+    public const int PlayerX = 9;
+    public const int PlayerO = 10;
+}
+
+public static class ServerToClientSignifiers
+{
+    public const int LoginComplete = 1;
+    public const int LoginFailed = 2;
+    public const int AccountCreationComplete = 3;
+    public const int AccountCreationFailed = 4;
+    public const int OpponentPlay = 5;
+    public const int GameStart = 6;
+    public const int ClientIsObserver = 7;
+    public const int ClientIsPlayer = 8;
+    public const int ClientWon = 9;
+    public const int ClientLost = 10;
+    public const int PlayerX = 11;
+    public const int PlayerO = 12;
 }
