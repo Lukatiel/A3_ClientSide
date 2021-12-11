@@ -24,16 +24,17 @@ public class GameSystemManager : MonoBehaviour
     //--
 
     //TicTacToe Variables
+    public GameObject boardUI;
     public Text[] gridSpaceButtonList;
     public bool canPlayGame;
-    private string playerSide;
+    public string playerSide;
     public GameObject gameOverPanel;
     public Text gameOverText;
     private int moveCount;
     public Player playerX, playerO;
     public PlayerColour activePlayerColour, inactivePlayerColour;
     public GameObject[] gridSpaceButtonArray;
-    public Text gridSpaceText;
+    public Text[] gridSpaceText;
     GameObject gridPanel_x_1, gridPanel_x_2, gridPanel_y_1, gridPanel_y_2;
     GameObject playerX_board, playerO_board;
     GameObject backGroundPanel, boardPanel;
@@ -95,13 +96,17 @@ public class GameSystemManager : MonoBehaviour
             else if (go.name == "PlayerO")
                 playerO_board = go;
 
+            else if (go.name == "BoardUI")
+                boardUI = go;
+
+
             ///Networked Client
             else if (go.name == "NetworkedClient")
                 networkedClient = go;
             
         }
 
-        foreach(GameObject go in gridSpaceButtonArray)
+        foreach (GameObject go in gridSpaceButtonArray)
         {
 
             if (go.name == "GridSpaceButton_0")
@@ -133,12 +138,13 @@ public class GameSystemManager : MonoBehaviour
         ticTacToeSquareButton.GetComponent<Button>().onClick.AddListener(TicTacToeSquareButtonPressed);
         sendChatButton.GetComponent<Button>().onClick.AddListener(SendChatButtonPressed);
 
-        for(int i = 0; i < gridSpaceButtonArray.Length; i++)
-        {
-            gridSpaceButtonArray[i].GetComponent<Button>().onClick.AddListener(SetSpace);
-        }
+        //for (int i = 0; i < gridSpaceButtonArray.Length; i++)
+        //{
+        //    //int _i = ++i;
+        //    gridSpaceButtonArray[i].GetComponent<Button>().onClick.AddListener(delegate { SetSpace(i); });
+        //}
 
-        
+
         ChangeState(GameStates.LoginMenu);
         Debug.Log("Change State to login");
     }
@@ -309,34 +315,34 @@ public class GameSystemManager : MonoBehaviour
 
     ///TicTacToe Functions
 
-    public void SetSpace()
+    public void SetSpace(int spot)
     {
-        gridSpaceText.text = GetPlayerSide();
-        for (int x = 0; x < gridSpaceButtonArray.Length; x++)
-        {
-            gridSpaceButtonArray[x].GetComponent<Button>().interactable = false;
-        }
-
+        Debug.Log("Player Side: " + playerSide);
+        Debug.Log("Before:" + gridSpaceButtonArray[spot].GetComponent<Text>().text);
+        gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = playerSide;
+        Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponent<Text>().text);
+        //for (int x = 0; x < gridSpaceButtonArray.Length; x++)
+        //    gridSpaceButtonArray[x].GetComponent<Button>().interactable = false;
         EndTurn();
     }
 
 
-    public string GetPlayerSide()
-    {
-        if(networkedClient.GetComponent<NetworkedClient>().IsClientX())
-        {
-            return playerSide = "X";
-        }
-        else if(networkedClient.GetComponent<NetworkedClient>().IsClientO())
-        {
-            return playerSide = "O";
-        }
-        else
-        {
-            return null;
-        }
+    //public string GetPlayerSide()
+    //{
+    //    if(networkedClient.GetComponent<NetworkedClient>().CheckPlayerSide() == true)
+    //    {
+    //        return playerSide = "X";
+    //    }
+    //    else if(networkedClient.GetComponent<NetworkedClient>().CheckPlayerSide() == false)
+    //    {
+    //        return playerSide = "O";
+    //    }
+    //    else
+    //    {
+    //        return null;
+    //    }
         
-    }
+    //}
 
     public void EndTurn()
     {
@@ -344,51 +350,52 @@ public class GameSystemManager : MonoBehaviour
         moveCount++;
         //Just doing this through brute force as its a small game
         //Check if the First Row is a win
-        if(gridSpaceButtonList[0].text == playerSide && gridSpaceButtonList[1].text == playerSide 
-                                                     && gridSpaceButtonList[2].text == playerSide)
+        if(gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[1].GetComponentInChildren<Text>().text == playerSide 
+                                                     && gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Second Row Win Check
-        if (gridSpaceButtonList[3].text == playerSide && gridSpaceButtonList[4].text == playerSide
-                                                     && gridSpaceButtonList[5].text == playerSide)
+        if (gridSpaceButtonArray[3].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[5].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Third Row Win Check
-        if (gridSpaceButtonList[6].text == playerSide && gridSpaceButtonList[7].text == playerSide
-                                                     && gridSpaceButtonList[8].text == playerSide)
+        if (gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[7].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //First Column
-        if (gridSpaceButtonList[0].text == playerSide && gridSpaceButtonList[3].text == playerSide
-                                                     && gridSpaceButtonList[6].text == playerSide)
+        if (gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[3].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Second Column
-        if (gridSpaceButtonList[1].text == playerSide && gridSpaceButtonList[4].text == playerSide
-                                                     && gridSpaceButtonList[7].text == playerSide)
+        if (gridSpaceButtonArray[1].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[7].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Third Column
-        if (gridSpaceButtonList[2].text == playerSide && gridSpaceButtonList[5].text == playerSide
-                                                     && gridSpaceButtonList[8].text == playerSide)
+        if (gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[5].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Left to right Diag
-        if (gridSpaceButtonList[2].text == playerSide && gridSpaceButtonList[4].text == playerSide
-                                                     && gridSpaceButtonList[6].text == playerSide)
+        if (gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide)
         {
             GameOver(playerSide);
         }
         //Right to left diag
-        if (gridSpaceButtonList[0].text == playerSide && gridSpaceButtonList[4].text == playerSide
-                                                     && gridSpaceButtonList[8].text == playerSide)
+        if (gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
+                                                     && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
+            //networkedClient.GetComponent<NetworkedClient>().SendMessageToHost();
             GameOver(playerSide);
         }
 
@@ -426,11 +433,11 @@ public class GameSystemManager : MonoBehaviour
         //TO CHANGE TO THE SERVER ID OR SOME SHIT IDK
         
 
-        if(networkedClient.GetComponent<NetworkedClient>().IsClientX())
+        if(networkedClient.GetComponent<NetworkedClient>().GetPlayerSide() == "X")
         {
             SetPlayerColour(playerX, playerO);
         }
-        else if(networkedClient.GetComponent<NetworkedClient>().IsClientO())
+        else if(networkedClient.GetComponent<NetworkedClient>().GetPlayerSide() == "O")
         {
             SetPlayerColour(playerO, playerX);
         }
@@ -445,7 +452,7 @@ public class GameSystemManager : MonoBehaviour
 
     public void RestartGame()
     {
-        playerSide = "X";
+       // playerSide = "X";
         moveCount = 0;
         gameOverPanel.SetActive(false);
         SetPlayerColour(playerX, playerO);
@@ -473,7 +480,24 @@ public class GameSystemManager : MonoBehaviour
     void StartGame()
     {
         SetBoardInteractable(true);
-        
+
+        //string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
+        //Debug.Log(holdString);
+        //if (holdString == "X")
+        //{
+        //    Debug.Log("Player Side is set to X");
+        //    playerSide = "X";
+        //}
+        //else if (holdString == "O")
+        //{
+        //    Debug.Log("Player Side is set to O");
+        //    playerSide = "O";
+        //}
+        //else
+        //{
+        //    Debug.Log("Player Side isnt returning anything in start game");
+        //}
+
     }
     void SetPlayerColorsInactive() 
     { 
@@ -525,18 +549,19 @@ public class GameSystemManager : MonoBehaviour
         chatInputField.gameObject.SetActive(false);
         sendChatButton.SetActive(false);
 
-        //Board UI
-        for (int i = 0; i < gridSpaceButtonArray.Length; i++)
-        {
-            gridSpaceButtonArray[i].SetActive(false);
-        }
+        ////Board UI
+        boardUI.SetActive(false);
+        //for (int i = 0; i < gridSpaceButtonArray.Length; i++)
+        //{
+        //    gridSpaceButtonArray[i].SetActive(false);
+        //}
         gameOverPanel.SetActive(false);
-        playerX_board.SetActive(false);
-        playerO_board.SetActive(false);
-        gridPanel_x_1.SetActive(false); gridPanel_x_2.SetActive(false);
-        gridPanel_y_1.SetActive(false); gridPanel_y_2.SetActive(false);
-        backGroundPanel.SetActive(false);
-        boardPanel.SetActive(false);
+        //playerX_board.SetActive(false);
+        //playerO_board.SetActive(false);
+        //gridPanel_x_1.SetActive(false); gridPanel_x_2.SetActive(false);
+        //gridPanel_y_1.SetActive(false); gridPanel_y_2.SetActive(false);
+        //backGroundPanel.SetActive(false);
+        //boardPanel.SetActive(false);
 
         if (newState == GameStates.LoginMenu)
         {
@@ -575,29 +600,59 @@ public class GameSystemManager : MonoBehaviour
             Debug.Log(newState);
 
         }
-        else if (newState == GameStates.TicTacToeSomethingSomething)
+        else if (newState == GameStates.TicTacToeGame)
         {
             //ticTacToeSquareButton.SetActive(true);
             //set tictactoe game board ui to active
-            backGroundPanel.SetActive(true);
-            boardPanel.SetActive(true);
-            playerX_board.SetActive(true);
-            playerO_board.SetActive(true);
-            gridPanel_x_1.SetActive(true); gridPanel_x_2.SetActive(true);
-            gridPanel_y_1.SetActive(true); gridPanel_y_2.SetActive(true);
-            for (int i = 0; i < gridSpaceButtonArray.Length; i++)
-            {
-                gridSpaceButtonArray[i].SetActive(true);
-            }
-            gridSpaceText.gameObject.SetActive(true);
+
+            boardUI.SetActive(true);
+            //backGroundPanel.SetActive(true);
+            //boardPanel.SetActive(true);
+            //playerX_board.SetActive(true);
+            //playerO_board.SetActive(true);
+            //gridPanel_x_1.SetActive(true); gridPanel_x_2.SetActive(true);
+            //gridPanel_y_1.SetActive(true); gridPanel_y_2.SetActive(true);
+            //for (int i = 0; i < gridSpaceButtonArray.Length; i++)
+            //{
+            //    gridSpaceButtonArray[i].SetActive(true);
+            //}
+            //gridSpaceText.gameObject.SetActive(true);
 
 
             moveCount = 0;
             //SetTicTacToeButtons();
-            playerSide = "X";
+            //string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
+            //Debug.Log(holdString);
+            //if (holdString == "X")
+            //{
+            //    Debug.Log("Player Side is set to X");
+            //    playerSide = "X";
+            //}
+            //else if (holdString == "O")
+            //{
+            //    Debug.Log("Player Side is set to O");
+            //    playerSide = "O";
+            //}
+            //playerSide = "X";
             SetPlayerColour(playerX, playerO);
 
             StartGame();
+            string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
+            Debug.Log(holdString);
+            if (holdString == "X")
+            {
+                Debug.Log("Player Side is set to X");
+                playerSide = "X";
+            }
+            else if (holdString == "O")
+            {
+                Debug.Log("Player Side is set to O");
+                playerSide = "O";
+            }
+            else
+            {
+                Debug.Log("Player Side isnt returning anything in start game");
+            }
             Debug.Log(newState);
         }
 

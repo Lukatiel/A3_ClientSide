@@ -17,8 +17,8 @@ public class NetworkedClient : MonoBehaviour
     bool isConnected = false;
     int ourClientID;
 
-    bool isClientX = false;
-    bool isClientO = false;
+    bool clientIsX;
+    bool clientIsO;
 
     GameObject gameSystemManager;
 
@@ -35,6 +35,8 @@ public class NetworkedClient : MonoBehaviour
             }
         }
 
+        clientIsX = false;
+        clientIsO = false;
         Connect();
     }
 
@@ -145,7 +147,9 @@ public class NetworkedClient : MonoBehaviour
         else if (signifier == ServerToClientSignifiers.GameStart)
         {
             Debug.Log("Game Start");
+
             gameSystemManager.GetComponent<GameSystemManager>().ChangeState(GameStates.TicTacToeGame);
+            
         }
         else if (signifier == ServerToClientSignifiers.OpponentPlay)
         {
@@ -160,23 +164,39 @@ public class NetworkedClient : MonoBehaviour
         else if(signifier == ServerToClientSignifiers.PlayerX)
         {
             Debug.Log("Client is player X");
-            IsClientX();
+            clientIsX = true;
+            GetPlayerSide();
         }
         else if (signifier == ServerToClientSignifiers.PlayerO)
         {
             Debug.Log("Client is player O");
-            IsClientO();
+            clientIsO = true;
+            GetPlayerSide();
         }
     }
 
-    public bool IsClientX()
+    public string GetPlayerSide()
     {
-        return isClientX = true;
-    }
-    public bool IsClientO()
-    {
+        if (clientIsX)
+        {
+            Debug.Log("Player Side returned X");
+            return "X";
+        }
+        else if (clientIsO)
+        {
+            Debug.Log("Player Side returned O");
+            return "O";
+        }
+        else if (!clientIsX && !clientIsO)
+        {
+            Debug.Log("Get player Side aint workin");
+            return null;
+        }
+        else
+        {
+            return null;
+        }
 
-        return isClientO = true;
     }
 
     public bool IsConnected()
