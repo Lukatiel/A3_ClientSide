@@ -317,12 +317,25 @@ public class GameSystemManager : MonoBehaviour
 
     public void SetSpace(int spot)
     {
-        Debug.Log("Player Side: " + playerSide);
-        Debug.Log("Before:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
+        networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.OpponentPlay + "," + spot + "," + playerSide);
+
         gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = playerSide;
         Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
         gridSpaceButtonArray[spot].GetComponent<Button>().interactable = false;
+    }
+
+    public void UpdateSpace(int spot, string pSide)
+    {
+        Debug.Log("Update Space called, spot: " + spot + " side: " + pSide);
+
+
+        Debug.Log("Player Side: " + pSide);
+        Debug.Log("Before:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
+        gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = pSide;
+        Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
+        gridSpaceButtonArray[spot].GetComponent<Button>().interactable = false;
         EndTurn();
+        
     }
 
 

@@ -148,11 +148,11 @@ public class NetworkedClient : MonoBehaviour
             gameSystemManager.GetComponent<GameSystemManager>().ChangeState(GameStates.TicTacToeGame);
             
         }
-        else if (signifier == ServerToClientSignifiers.OpponentPlay)
-        {
-            Debug.Log("Opponent Play");
-            gameSystemManager.GetComponent<GameSystemManager>().canPlayGame = true;
-        }
+        //else if (signifier == ServerToClientSignifiers.OpponentPlay)
+        //{
+        //    Debug.Log("Opponent Play");
+        //    gameSystemManager.GetComponent<GameSystemManager>().canPlayGame = true;
+        //}
         else if(signifier == ServerToClientSignifiers.ClientIsObserver)
         {
             Debug.Log("Player is now observer");
@@ -167,6 +167,12 @@ public class NetworkedClient : MonoBehaviour
         {
             Debug.Log("Client is player O");
             playerSide = "O";
+        }
+        else if (signifier == ServerToClientSignifiers.OpponentPlay)
+        {
+            Debug.Log("Opponent Play called");
+            Debug.Log(csv[1] + "" + "," + csv[2]);
+            gameSystemManager.GetComponent<GameSystemManager>().UpdateSpace(int.Parse(csv[1]), csv[2]);
         }
     }
 
@@ -198,6 +204,7 @@ public static class ClientToServerSignifiers
     public const int ClientLost = 8;
     public const int PlayerX = 9;
     public const int PlayerO = 10;
+    public const int OpponentPlay = 11;
 }
 
 public static class ServerToClientSignifiers
