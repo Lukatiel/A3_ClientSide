@@ -17,8 +17,7 @@ public class NetworkedClient : MonoBehaviour
     bool isConnected = false;
     int ourClientID;
 
-    bool clientIsX;
-    bool clientIsO;
+    public string playerSide;
 
     GameObject gameSystemManager;
 
@@ -35,8 +34,6 @@ public class NetworkedClient : MonoBehaviour
             }
         }
 
-        clientIsX = false;
-        clientIsO = false;
         Connect();
     }
 
@@ -164,38 +161,18 @@ public class NetworkedClient : MonoBehaviour
         else if(signifier == ServerToClientSignifiers.PlayerX)
         {
             Debug.Log("Client is player X");
-            clientIsX = true;
-            GetPlayerSide();
+            playerSide = "X";
         }
         else if (signifier == ServerToClientSignifiers.PlayerO)
         {
             Debug.Log("Client is player O");
-            clientIsO = true;
-            GetPlayerSide();
+            playerSide = "O";
         }
     }
 
     public string GetPlayerSide()
     {
-        if (clientIsX)
-        {
-            Debug.Log("Player Side returned X");
-            return "X";
-        }
-        else if (clientIsO)
-        {
-            Debug.Log("Player Side returned O");
-            return "O";
-        }
-        else if (!clientIsX && !clientIsO)
-        {
-            Debug.Log("Get player Side aint workin");
-            return null;
-        }
-        else
-        {
-            return null;
-        }
+        return playerSide;
 
     }
 

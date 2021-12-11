@@ -318,11 +318,10 @@ public class GameSystemManager : MonoBehaviour
     public void SetSpace(int spot)
     {
         Debug.Log("Player Side: " + playerSide);
-        Debug.Log("Before:" + gridSpaceButtonArray[spot].GetComponent<Text>().text);
+        Debug.Log("Before:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
         gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = playerSide;
-        Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponent<Text>().text);
-        //for (int x = 0; x < gridSpaceButtonArray.Length; x++)
-        //    gridSpaceButtonArray[x].GetComponent<Button>().interactable = false;
+        Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
+        gridSpaceButtonArray[spot].GetComponent<Button>().interactable = false;
         EndTurn();
     }
 
@@ -431,13 +430,11 @@ public class GameSystemManager : MonoBehaviour
     void ChangeSides()
     {
         //TO CHANGE TO THE SERVER ID OR SOME SHIT IDK
-        
-
-        if(networkedClient.GetComponent<NetworkedClient>().GetPlayerSide() == "X")
+        if(playerSide == "X")
         {
             SetPlayerColour(playerX, playerO);
         }
-        else if(networkedClient.GetComponent<NetworkedClient>().GetPlayerSide() == "O")
+        else if(playerSide == "O")
         {
             SetPlayerColour(playerO, playerX);
         }
@@ -480,24 +477,6 @@ public class GameSystemManager : MonoBehaviour
     void StartGame()
     {
         SetBoardInteractable(true);
-
-        //string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
-        //Debug.Log(holdString);
-        //if (holdString == "X")
-        //{
-        //    Debug.Log("Player Side is set to X");
-        //    playerSide = "X";
-        //}
-        //else if (holdString == "O")
-        //{
-        //    Debug.Log("Player Side is set to O");
-        //    playerSide = "O";
-        //}
-        //else
-        //{
-        //    Debug.Log("Player Side isnt returning anything in start game");
-        //}
-
     }
     void SetPlayerColorsInactive() 
     { 
@@ -621,38 +600,12 @@ public class GameSystemManager : MonoBehaviour
 
             moveCount = 0;
             //SetTicTacToeButtons();
-            //string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
-            //Debug.Log(holdString);
-            //if (holdString == "X")
-            //{
-            //    Debug.Log("Player Side is set to X");
-            //    playerSide = "X";
-            //}
-            //else if (holdString == "O")
-            //{
-            //    Debug.Log("Player Side is set to O");
-            //    playerSide = "O";
-            //}
-            //playerSide = "X";
+            
+            playerSide = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
+            Debug.Log(playerSide);
             SetPlayerColour(playerX, playerO);
 
             StartGame();
-            string holdString = networkedClient.GetComponent<NetworkedClient>().GetPlayerSide();
-            Debug.Log(holdString);
-            if (holdString == "X")
-            {
-                Debug.Log("Player Side is set to X");
-                playerSide = "X";
-            }
-            else if (holdString == "O")
-            {
-                Debug.Log("Player Side is set to O");
-                playerSide = "O";
-            }
-            else
-            {
-                Debug.Log("Player Side isnt returning anything in start game");
-            }
             Debug.Log(newState);
         }
 
