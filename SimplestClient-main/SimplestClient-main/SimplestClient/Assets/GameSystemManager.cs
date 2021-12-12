@@ -317,11 +317,14 @@ public class GameSystemManager : MonoBehaviour
 
     public void SetSpace(int spot)
     {
-        networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.OpponentPlay + "," + spot + "," + playerSide);
-
+        
         gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = playerSide;
         Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
         gridSpaceButtonArray[spot].GetComponent<Button>().interactable = false;
+        EndTurn(playerSide);
+        
+        networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.OpponentPlay + "," + spot + "," + playerSide);
+
     }
 
     public void UpdateSpace(int spot, string pSide)
@@ -334,7 +337,7 @@ public class GameSystemManager : MonoBehaviour
         gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text = pSide;
         Debug.Log("After:" + gridSpaceButtonArray[spot].GetComponentInChildren<Text>().text);
         gridSpaceButtonArray[spot].GetComponent<Button>().interactable = false;
-        EndTurn();
+        EndTurn(pSide);
         
     }
 
@@ -356,7 +359,7 @@ public class GameSystemManager : MonoBehaviour
         
     //}
 
-    public void EndTurn()
+    public void EndTurn(string WinningPlayer)
     {
         //Debug.Log("end turn function");
         moveCount++;
@@ -365,50 +368,58 @@ public class GameSystemManager : MonoBehaviour
         if(gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[1].GetComponentInChildren<Text>().text == playerSide 
                                                      && gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Second Row Win Check
         if (gridSpaceButtonArray[3].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[5].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Third Row Win Check
         if (gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[7].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //First Column
         if (gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[3].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Second Column
         if (gridSpaceButtonArray[1].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[7].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Third Column
         if (gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[5].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Left to right Diag
         if (gridSpaceButtonArray[2].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[6].GetComponentInChildren<Text>().text == playerSide)
         {
-            GameOver(playerSide);
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
         //Right to left diag
         if (gridSpaceButtonArray[0].GetComponentInChildren<Text>().text == playerSide && gridSpaceButtonArray[4].GetComponentInChildren<Text>().text == playerSide
                                                      && gridSpaceButtonArray[8].GetComponentInChildren<Text>().text == playerSide)
         {
-            //networkedClient.GetComponent<NetworkedClient>().SendMessageToHost();
-            GameOver(playerSide);
+            
+            networkedClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.GameOver + "," + WinningPlayer);
+            GameOver(WinningPlayer);
         }
 
         if(moveCount>= 9)
@@ -419,7 +430,7 @@ public class GameSystemManager : MonoBehaviour
         ChangeSides();
     }
 
-    void GameOver(string WinningPlayer)
+    public void GameOver(string WinningPlayer)
     {
         for(int i = 0; i < gridSpaceButtonList.Length; i++)
         {

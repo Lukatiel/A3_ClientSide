@@ -174,6 +174,10 @@ public class NetworkedClient : MonoBehaviour
             Debug.Log(csv[1] + "" + "," + csv[2]);
             gameSystemManager.GetComponent<GameSystemManager>().UpdateSpace(int.Parse(csv[1]), csv[2]);
         }
+        else if (signifier == ServerToClientSignifiers.GameOver)
+        {
+            gameSystemManager.GetComponent<GameSystemManager>().GameOver(csv[1]);
+        }
     }
 
     public string GetPlayerSide()
@@ -205,6 +209,7 @@ public static class ClientToServerSignifiers
     public const int PlayerX = 9;
     public const int PlayerO = 10;
     public const int OpponentPlay = 11;
+    public const int GameOver = 12;
 }
 
 public static class ServerToClientSignifiers
@@ -221,4 +226,5 @@ public static class ServerToClientSignifiers
     public const int ClientLost = 10;
     public const int PlayerX = 11;
     public const int PlayerO = 12;
+    public const int GameOver = 13;
 }
